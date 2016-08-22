@@ -1,0 +1,46 @@
+<!DOCTYPE sqlMap      
+    PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"      
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!--用户收入xml -->
+<sqlMap namespace="Income">
+ 
+	<typeAlias alias="Inc" type="com.earn.ms.po.Income" />
+	<select id="list" parameterClass="map" resultClass="Inc">
+		SELECT 	lin.UID, lu.ALIPAYNAME NAME,lu.ALIPAY username,
+		LASTINCOME,TOTALINCOME,TOTALPAY,DAYICM,MONTHICM,
+		YEARICM,INVITEINCME,REDPACKAGE,MISINCOM
+	   FROM  LE_USERINCOME lin
+	   LEFT JOIN LE_USER  lu ON lin.UID=lu.UID
+		where 1=1
+		<isNotEmpty prepend="and" property="searchs">
+		(lu.ALIPAY like '%$searchs$%' or lu.ALIPAYNAME like '%$searchs$%' or lu.PHONE like '%$searchs$%')
+		</isNotEmpty>
+		<isNotEmpty prepend="and" property="startTime">
+			<![CDATA[DATE_FORMAT(LASTINCOME,'%Y-%m-%d')>=#startTime#]]>
+		</isNotEmpty>
+		<isNotEmpty prepend="and" property="endTime">
+			<![CDATA[DATE_FORMAT(LASTINCOME,'%Y-%m-%d')<=#endTime#]]>
+		</isNotEmpty>
+		<isNotEmpty prepend="and" property="uid">
+			lin.UID=#uid#
+		</isNotEmpty>
+	    ORDER BY LASTINCOME DESC ,totalincome DESC
+	</select>
+	<select id="listCount" parameterClass="map" resultClass="int">
+		select count(lin.UID) FROM  LE_USERINCOME lin
+	   LEFT JOIN LE_USER  lu ON lin.UID=lu.UID
+		where 1=1
+		<isNotEmpty prepend="and" property="searchs">
+			(lu.ALIPAY like '%$searchs$%' or lu.ALIPAYNAME like '%$searchs$%' or lu.PHONE like '%$searchs$%')
+		</isNotEmpty>
+		<isNotEmpty prepend="and" property="startTime">
+			<![CDATA[DATE_FORMAT(LASTINCOME,'%Y-%m-%d')>=#startTime#]]>
+		</isNotEmpty>
+		<isNotEmpty prepend="and" property="endTime">
+			<![CDATA[DATE_FORMAT(LASTINCOME,'%Y-%m-%d')<=#endTime#]]>
+		</isNotEmpty>
+		<isNotEmpty prepend="and" property="id">
+			lin.UID=#id#
+		</isNotEmpty>
+	</select>
+</sqlMap>

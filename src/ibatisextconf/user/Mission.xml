@@ -1,0 +1,79 @@
+<!DOCTYPE sqlMap      
+    PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"      
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="Mission">
+	<typeAlias alias="MI" type="com.earn.ms.po.Mission" />
+	<insert id="insert" parameterClass="MI">
+		INSERT INTO LE_MISSIONS
+		(ID, MISINDEX, PROID, MISPRICE, MISDESC,
+		MISDATE, MISTIME, MISTYPE, MISVERIFY )
+		VALUES
+		(#id#, #misindex#, #proid#, #misprice#, #misdesc#,
+		#misdate#, #mistime#, #mistype#, #misverify#)
+
+	</insert>
+	<select id="list" parameterClass="map" resultClass="MI">
+		SELECT 	m.ID,p.PRONAME name,IFNULL(MISINDEX,0) MISINDEX, PROID, MISPRICE, 
+	    MISDESC,  MISDATE,  MISTIME,  MISTYPE,  MISVERIFY
+	  FROM LE_MISSIONS m LEFT JOIN LE_PRODUCT p ON m.PROID=p.ID
+		where 1=1
+		<isNotEmpty prepend="and" property="search">
+			(p.PRONAME like '%$search$%')
+		</isNotEmpty>
+		<isNotEmpty prepend="and" property="id">
+			m.ID=#id#
+		</isNotEmpty>
+		GROUP BY p.PRONAME,MISINDEX
+	</select>
+	<select id="listCount" parameterClass="map" resultClass="int">
+		select count(m.ID) FROM LE_MISSIONS m 
+		LEFT JOIN LE_PRODUCT p ON m.PROID=p.ID
+		where 1=1
+		<isNotEmpty prepend="and" property="search">
+			(p.PRONAME like '%$search$%')
+		</isNotEmpty>
+		<isNotEmpty prepend="and" property="id">
+			m.ID=#id#
+		</isNotEmpty>
+	</select>
+	<!-- 搜索 指定任务ID 产品PROID 的 任务 -->
+	<select id="query" parameterClass="map" resultClass="MI">
+		SELECT 	m.ID,p.PRONAME name, IFNULL(MISINDEX,0) MISINDEX, PROID, MISPRICE, 
+	    MISDESC,  MISDATE,  MISTIME,  MISTYPE,  MISVERIFY
+	  FROM LE_MISSIONS m LEFT JOIN LE_PRODUCT p ON m.PROID=p.ID
+		where m.PROID=#proid# and m.ID=#id#
+	</select>
+ 
+	<!-- 修改任务基本信息 -->
+	<update id="update" parameterClass="MI">
+		UPDATE LE_MISSIONS 
+		<dynamic prepend="set">
+			<isNotNull prepend="," property="misindex">
+				MISINDEX = #misindex#
+			</isNotNull>
+			<isNotNull prepend="," property="proid">
+				PROID = #proid#
+			</isNotNull>
+			<isNotNull prepend="," property="misprice">
+				MISPRICE = #misprice#
+			</isNotNull>
+			<isNotNull prepend="," property="misdesc">
+				MISDESC = #misdesc#
+			</isNotNull>
+			<isNotNull prepend="," property="misdate">
+				MISDATE = #misdate# 
+			</isNotNull>
+			<isNotNull prepend="," property="mistime">
+				MISTIME = #mistime#
+			</isNotNull>
+			<isNotNull prepend="," property="mistype">
+					MISTYPE = #mistype#
+			</isNotNull>
+			<isNotNull prepend="," property="misverify">
+				MISVERIFY = #misverify#
+			</isNotNull>
+		</dynamic>
+		WHERE ID = #id# and PROID=#proid#
+	</update>
+ 
+</sqlMap>

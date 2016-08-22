@@ -1,0 +1,95 @@
+<!DOCTYPE sqlMap      
+    PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"      
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!--实体广告xml -->
+<sqlMap namespace="EntityAds">
+	<typeAlias alias="EntityAd" type="com.earn.ms.po.EntityAds" />
+	<select id="entlist" parameterClass="map" resultClass="EntityAd">
+		SELECT ID, NAME,IFNULL(ADSINDEX,0)ADSINDEX, URL,IMGURL,ADSPRICE , STATUES FROM
+		LE_OFFLINEADS WHERE 1=1
+		<isNotEmpty prepend="and" property="search">
+			(name like '%$search$%')
+		</isNotEmpty>
+		<isNotEqual compareValue="default" prepend="and" property="status">
+			STATUES = #status#
+		</isNotEqual>
+		<isNotEmpty prepend="and" property="id">
+			ID=#id#
+		</isNotEmpty>
+		order by statues desc,adsindex desc
+	</select>
+	<select id="entlistCount" parameterClass="map" resultClass="int">
+		select count(ID) FROM LE_OFFLINEADS
+		where 1=1
+		<isNotEmpty prepend="and" property="search">
+			(name like '%$search$%')
+		</isNotEmpty>
+		<isNotEqual compareValue="default" prepend="and" property="status">
+			STATUES = #status#
+		</isNotEqual>
+		<isNotEmpty prepend="and" property="id">
+			ID=#id#
+		</isNotEmpty>
+	</select>
+	<!-- 搜索 指定ID的 广告 -->
+	<select id="query" parameterClass="map" resultClass="EntityAd">
+		SELECT ID,
+		NAME,IFNULL(ADSINDEX,0)ADSINDEX, URL,IMGURL,ADSPRICE , STATUES ,YDPROVINCE,
+		LTPROVINCE,DXPROVINCE,IFNULL(YDPUTTYPE,0)YDPUTTYPE,IFNULL(LTPUTTYPE,0)LTPUTTYPE,
+		IFNULL(DXPUTTYPE,0)DXPUTTYPE
+		FROM LE_OFFLINEADS 
+		WHERE ID=#id#
+	</select>
+
+	<insert id="insert" parameterClass="EntityAd">
+		INSERT INTO LE_OFFLINEADS
+		(ID,ADSINDEX,URL,IMGURL,ADSPRICE,statues,NAME,YDPROVINCE,LTPROVINCE,DXPROVINCE, 
+	    YDPUTTYPE,LTPUTTYPE,DXPUTTYPE) VALUES
+		(#id#,#adsindex#,#url#,#imgurl#,#adsprice#,#statues#,#name#,#ydprovince#,#ltprovince#,#dxprovince#, 
+	    #ydputtype#,#ltputtype#,#dxputtype#);
+	</insert>
+	<update id="update" parameterClass="EntityAd">
+		update LE_OFFLINEADS
+		<dynamic prepend="set">
+			<isNotNull prepend="," property="name">
+				name = #name#
+			</isNotNull>
+			<isNotNull prepend="," property="url">
+				URL = #url#
+			</isNotNull>
+			<isNotNull prepend="," property="adsprice">
+				ADSPRICE = #adsprice#
+			</isNotNull>
+			<isNotNull prepend="," property="statues">
+				statues = #statues#
+			</isNotNull>
+			<isNotNull prepend="," property="imgurl">
+				IMGURL = #imgurl#
+			</isNotNull>
+			<isNotNull prepend="," property="ltprovince">
+				LTPROVINCE = #ltprovince#
+			</isNotNull>
+			<isNotNull prepend="," property="ydprovince">
+				YDPROVINCE = #ydprovince#
+			</isNotNull>
+			<isNotNull prepend="," property="dxprovince">
+				DXPROVINCE = #dxprovince#
+			</isNotNull>
+			<isNotNull prepend="," property="ydputtype">
+				YDPUTTYPE = #ydputtype#
+			</isNotNull>
+			<isNotNull prepend="," property="ltputtype">
+				LTPUTTYPE = #ltputtype#
+			</isNotNull>
+			<isNotNull prepend="," property="dxputtype">
+				DXPUTTYPE = #dxputtype#
+			</isNotNull>
+		</dynamic>
+		where id=#id#
+	</update>
+	<!-- 搜索 最大的索引 -->
+	<select id="maxindex" parameterClass="map" resultClass="Integer">
+		SELECT
+		IFNULL(MAX(ADSINDEX),0) FROM LE_OFFLINEADS
+	</select>
+</sqlMap>

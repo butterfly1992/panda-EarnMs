@@ -1,0 +1,424 @@
+<!DOCTYPE sqlMap      
+    PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"      
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!--统计管理xml -->
+<sqlMap namespace="Statistics">
+	<typeAlias alias="RED" type="com.earn.ms.po.Redstatistics" />
+	<typeAlias alias="PRO" type="com.earn.ms.po.Prostatistics" />
+	<typeAlias alias="RLOG" type="com.earn.ms.po.Redlog" />
+
+	<!-- 产品统计 -->
+	<select id="prolist" parameterClass="map" resultClass="PRO">
+		SELECT p.PRONAME name,SUM(ps.VIEWCOUNT)
+		VIEWCOUNT,SUM(ps.DOWNLOADCOUNT) DOWNLOADCOUNT,
+		SUM(ps.DOWNCOMPLATE)DOWNCOMPLATE,SUM(ps.INSTALLCOUNT)INSTALLCOUNT,
+		SUM(ps.FRISTMISSION)FRISTMISSION,ps.DATE
+		FROM LE_PRO_STATISTICS ps
+		LEFT
+		JOIN LE_PRODUCT p ON ps.ID=p.ID
+		WHERE 1=1
+		<isNotEmpty prepend="and" property="search">
+			(p.PRONAME like
+			'%$search$%')
+		</isNotEmpty>
+		<isNotEmpty prepend="and" property="startTime">
+			<![CDATA[DATE_FORMAT(DATE,'%Y-%m-%d')>=#startTime#]]>
+		</isNotEmpty>
+		<isNotEmpty prepend="and" property="endTime">
+			<![CDATA[DATE_FORMAT(DATE,'%Y-%m-%d')<=#endTime#]]>
+		</isNotEmpty>
+		<isEqual compareValue="0" property="type">
+			GROUP BY ps.ID,ps.DATE
+		</isEqual>
+		<isEqual compareValue="1" property="type">
+			GROUP BY ps.ID
+		</isEqual>
+		<isEqual compareValue="2" property="type">
+			GROUP BY ps.DATE
+		</isEqual>
+		ORDER BY ps.DATE DESC,ps.DOWNCOMPLATE DESC
+	</select>
+	<select id="prolistCount" parameterClass="map" resultClass="int">
+		select count(ID) FROM (
+		SELECT ps.ID FROM LE_PRO_STATISTICS ps
+		LEFT JOIN
+		LE_PRODUCT p ON ps.ID=p.ID
+		WHERE 1=1
+		<isNotEmpty prepend="and" property="search">
+			(p.PRONAME like
+			'%$search$%')
+		</isNotEmpty>
+		<isNotEmpty prepend="and" property="startTime">
+			<![CDATA[DATE_FORMAT(DATE,'%Y-%m-%d')>=#startTime#]]>
+		</isNotEmpty>
+		<isNotEmpty prepend="and" property="endTime">
+			<![CDATA[DATE_FORMAT(DATE,'%Y-%m-%d')<=#endTime#]]>
+		</isNotEmpty>
+		<isEqual compareValue="0" property="type">
+			GROUP BY ps.ID,ps.DATE
+		</isEqual>
+		<isEqual compareValue="1" property="type">
+			GROUP BY ps.ID
+		</isEqual>
+		<isEqual compareValue="2" property="type">
+			GROUP BY ps.DATE
+		</isEqual>
+		)ll
+	</select>
+
+	<!-- 红包统计 -->
+	<select id="redlist" parameterClass="map" resultClass="RED">
+		SELECT ID, NAME,SUM(SHOWCOUNTS)SHOWCOUNTS,SUM(CLICKDOWN)CLICKDOWN,DATE
+		FROM(
+		SELECT r.ID, b.NAME
+		NAME,SUM(IFNULL(r.CLICKDOWN,0))CLICKDOWN,SUM(IFNULL(r.SHOWCOUNTS,0))SHOWCOUNTS,r.DATE
+		FROM LE_SHAKE_PRO_STATI r
+		LEFT JOIN LE_BOUTIQUEADS b ON r.ID=b.ID
+		WHERE
+		1=1
+		<isNotEmpty prepend="and" property="search">
+			(b.NAME like
+			'%$search$%')
+		</isNotEmpty>
+		<isNotEmpty prepend="and" property="startTime">
+		<![CDATA[DATE_FORMAT(r.DATE ,'%Y-%m-%d')>=#startTime#]]>
+		</isNotEmpty>
+
+		<isNotEmpty prepend="and" property="endTime">
+			<![CDATA[DATE_FORMAT(r.DATE ,'%Y-%m-%d')<=#endTime#]]>
+		</isNotEmpty>
+		<isEqual compareValue="0" property="type">
+			GROUP BY r.ID,r.DATE
+		</isEqual>
+		<isEqual compareValue="1" property="type">
+			GROUP BY r.ID
+		</isEqual>
+		<isEqual compareValue="2" property="type">
+			GROUP BY r.DATE
+		</isEqual>
+
+		UNION ALL
+
+		SELECT
+		r.ID,o.NAME,SUM(IFNULL(r.CLICKDOWN,0))CLICKDOWN,SUM(IFNULL(r.SHOWCOUNTS,0))SHOWCOUNTS,r.DATE
+		FROM LE_SHAKE_PRO_STATI r
+		LEFT JOIN LE_OFFLINEADS o ON r.ID=o.ID
+		WHERE
+		1=1
+		<isNotEmpty prepend="and" property="search">
+			(o.NAME like
+			'%$search$%')
+		</isNotEmpty>
+		<isNotEmpty prepend="and" property="startTime">
+		<![CDATA[DATE_FORMAT(r.DATE ,'%Y-%m-%d')>=#startTime#]]>
+		</isNotEmpty>
+
+		<isNotEmpty prepend="and" property="endTime">
+			<![CDATA[DATE_FORMAT(r.DATE ,'%Y-%m-%d')<=#endTime#]]>
+		</isNotEmpty>
+		<isEqual compareValue="0" property="type">
+			GROUP BY r.ID,r.DATE
+		</isEqual>
+		<isEqual compareValue="1" property="type">
+			GROUP BY r.ID
+		</isEqual>
+		<isEqual compareValue="2" property="type">
+			GROUP BY r.DATE
+		</isEqual>
+
+		UNION ALL
+
+		SELECT r.ID,a.TITLE
+		NAME,SUM(IFNULL(r.CLICKDOWN,0))CLICKDOWN,SUM(IFNULL(r.SHOWCOUNTS,0))SHOWCOUNTS,r.DATE
+		FROM
+		LE_SHAKE_PRO_STATI r
+		LEFT JOIN LE_SHAREARTICLE a ON r.ID=a.ID
+		WHERE
+		1=1
+		<isNotEmpty prepend="and" property="search">
+			(a.TITLE like
+			'%$search$%')
+		</isNotEmpty>
+		<isNotEmpty prepend="and" property="startTime">
+		<![CDATA[DATE_FORMAT(r.DATE ,'%Y-%m-%d')>=#startTime#]]>
+		</isNotEmpty>
+
+		<isNotEmpty prepend="and" property="endTime">
+			<![CDATA[DATE_FORMAT(r.DATE ,'%Y-%m-%d')<=#endTime#]]>
+		</isNotEmpty>
+
+		<isEqual compareValue="0" property="type">
+			GROUP BY r.ID,r.DATE
+		</isEqual>
+		<isEqual compareValue="1" property="type">
+			GROUP BY r.ID
+		</isEqual>
+		<isEqual compareValue="2" property="type">
+			GROUP BY r.DATE
+		</isEqual>
+		)hh
+		<isEqual compareValue="0" property="type">
+			GROUP BY ID,DATE
+		</isEqual>
+		<isEqual compareValue="1" property="type">
+			GROUP BY ID
+		</isEqual>
+		<isEqual compareValue="2" property="type">
+			GROUP BY DATE
+		</isEqual>
+		ORDER BY DATE DESC,CLICKDOWN DESC
+	</select>
+	<select id="redlistCount" parameterClass="map" resultClass="int">
+		SELECT COUNT(NAME) FROM(
+		SELECT
+		ID,NAME,SUM(SHOWCOUNTS)SHOWCOUNTS,SUM(CLICKDOWN)CLICKDOWN,DATE FROM(
+		SELECT r.ID,b.NAME
+		NAME,SUM(IFNULL(r.CLICKDOWN,0))CLICKDOWN,SUM(IFNULL(r.SHOWCOUNTS,0))SHOWCOUNTS,r.DATE
+		FROM LE_SHAKE_PRO_STATI r
+		LEFT JOIN LE_BOUTIQUEADS b ON r.ID=b.ID
+		WHERE
+		1=1
+		<isNotEmpty prepend="and" property="search">
+			(b.NAME like
+			'%$search$%')
+		</isNotEmpty>
+		<isNotEmpty prepend="and" property="startTime">
+		<![CDATA[DATE_FORMAT(r.DATE ,'%Y-%m-%d')>=#startTime#]]>
+		</isNotEmpty>
+
+		<isNotEmpty prepend="and" property="endTime">
+			<![CDATA[DATE_FORMAT(r.DATE ,'%Y-%m-%d')<=#endTime#]]>
+		</isNotEmpty>
+		<isEqual compareValue="0" property="type">
+			GROUP BY r.ID,r.DATE
+		</isEqual>
+		<isEqual compareValue="1" property="type">
+			GROUP BY r.ID
+		</isEqual>
+		<isEqual compareValue="2" property="type">
+			GROUP BY r.DATE
+		</isEqual>
+
+		UNION ALL
+
+		SELECT
+		r.ID,o.NAME,SUM(IFNULL(r.CLICKDOWN,0))CLICKDOWN,SUM(IFNULL(r.SHOWCOUNTS,0))SHOWCOUNTS,r.DATE
+		FROM LE_SHAKE_PRO_STATI r
+		LEFT JOIN LE_OFFLINEADS o ON r.ID=o.ID
+		WHERE
+		1=1
+		<isNotEmpty prepend="and" property="search">
+			(o.NAME like
+			'%$search$%')
+		</isNotEmpty>
+		<isNotEmpty prepend="and" property="startTime">
+		<![CDATA[DATE_FORMAT(r.DATE ,'%Y-%m-%d')>=#startTime#]]>
+		</isNotEmpty>
+
+		<isNotEmpty prepend="and" property="endTime">
+			<![CDATA[DATE_FORMAT(r.DATE ,'%Y-%m-%d')<=#endTime#]]>
+		</isNotEmpty>
+		<isEqual compareValue="0" property="type">
+			GROUP BY r.ID,r.DATE
+		</isEqual>
+		<isEqual compareValue="1" property="type">
+			GROUP BY r.ID
+		</isEqual>
+		<isEqual compareValue="2" property="type">
+			GROUP BY r.DATE
+		</isEqual>
+
+		UNION ALL
+
+		SELECT r.ID,a.TITLE
+		NAME,SUM(IFNULL(r.CLICKDOWN,0))CLICKDOWN,SUM(IFNULL(r.SHOWCOUNTS,0))SHOWCOUNTS,r.DATE
+		FROM
+		LE_SHAKE_PRO_STATI r
+		LEFT JOIN LE_SHAREARTICLE a ON r.ID=a.ID
+		WHERE
+		1=1
+		<isNotEmpty prepend="and" property="search">
+			(a.TITLE like
+			'%$search$%')
+		</isNotEmpty>
+		<isNotEmpty prepend="and" property="startTime">
+		<![CDATA[DATE_FORMAT(r.DATE ,'%Y-%m-%d')>=#startTime#]]>
+		</isNotEmpty>
+
+		<isNotEmpty prepend="and" property="endTime">
+			<![CDATA[DATE_FORMAT(r.DATE ,'%Y-%m-%d')<=#endTime#]]>
+		</isNotEmpty>
+
+		<isEqual compareValue="0" property="type">
+			GROUP BY r.ID,r.DATE
+		</isEqual>
+		<isEqual compareValue="1" property="type">
+			GROUP BY r.ID
+		</isEqual>
+		<isEqual compareValue="2" property="type">
+			GROUP BY r.DATE
+		</isEqual>
+		)hh
+		<isEqual compareValue="0" property="type">
+			GROUP BY ID,DATE
+		</isEqual>
+		<isEqual compareValue="1" property="type">
+			GROUP BY ID
+		</isEqual>
+		<isEqual compareValue="2" property="type">
+			GROUP BY DATE
+		</isEqual>
+		)dd
+	</select>
+
+	<!-- 红包日志统计 -->
+	<select id="redloglist" parameterClass="map" resultClass="RLOG">
+		SELECT ID,
+		NAME,PACKAGEDESC,PACKAGEPRICE,DATE,TIME,PACKAGETYPE,ALIPAYNAME
+		FROM(
+		SELECT r.ID,b.NAME
+		NAME,r.PACKAGEDESC,r.PACKAGEPRICE,r.DATE,r.TIME,r.PACKAGETYPE,u.ALIPAYNAME
+		FROM LE_REDPACKAGELOG r
+		LEFT JOIN LE_OFFLINEADS b ON r.ID=b.ID
+		LEFT JOIN LE_USER u ON r.UID=u.UID
+		WHERE 1=1
+		<isNotEmpty prepend="and" property="search">
+			(b.NAME LIKE '%$search$%' or u.ALIPAYNAME LIKE '%$search$%')
+		</isNotEmpty>
+		<isNotEmpty prepend="and" property="startTime">
+         <![CDATA[DATE_FORMAT(r.DATE ,'%Y-%m-%d')>=#startTime#]]>
+		</isNotEmpty>
+
+		<isNotEmpty prepend="and" property="endTime">
+         <![CDATA[DATE_FORMAT(r.DATE ,'%Y-%m-%d')<=#endTime#]]>
+		</isNotEmpty>
+
+		UNION ALL
+		
+		SELECT r.ID,b.NAME
+		NAME,r.PACKAGEDESC,r.PACKAGEPRICE,r.DATE,r.TIME,r.PACKAGETYPE,u.ALIPAYNAME
+		FROM LE_REDPACKAGELOG r
+		LEFT JOIN LE_BOUTIQUEADS b ON r.ID=b.ID
+		LEFT JOIN LE_USER u ON r.UID=u.UID
+		WHERE 1=1
+		<isNotEmpty prepend="and" property="search">
+			(b.NAME LIKE '%$search$%'
+			or u.ALIPAYNAME LIKE '%$search$%')
+		</isNotEmpty>
+		<isNotEmpty prepend="and" property="startTime">
+         <![CDATA[DATE_FORMAT(r.DATE ,'%Y-%m-%d')>=#startTime#]]>
+		</isNotEmpty>
+
+		<isNotEmpty prepend="and" property="endTime">
+         <![CDATA[DATE_FORMAT(r.DATE ,'%Y-%m-%d')<=#endTime#]]>
+		</isNotEmpty>
+
+		UNION ALL
+
+		SELECT r.ID,b.TITLE
+		NAME,r.PACKAGEDESC,r.PACKAGEPRICE,r.DATE,r.TIME,r.PACKAGETYPE,u.ALIPAYNAME
+		FROM LE_REDPACKAGELOG r
+		LEFT JOIN LE_SHAREARTICLE b ON r.ID=b.ID
+		LEFT JOIN LE_USER u ON r.UID=u.UID
+		WHERE 1=1
+		<isNotEmpty prepend="and" property="search">
+			(b.TITLE LIKE '%$search$%'
+			or u.ALIPAYNAME LIKE '%$search$%')
+		</isNotEmpty>
+		<isNotEmpty prepend="and" property="startTime">
+        <![CDATA[DATE_FORMAT(r.DATE ,'%Y-%m-%d')>=#startTime#]]>
+		</isNotEmpty>
+		<isNotEmpty prepend="and" property="endTime">
+        <![CDATA[DATE_FORMAT(r.DATE ,'%Y-%m-%d')<=#endTime#]]>
+		</isNotEmpty>
+ 		)kk
+		WHERE 1=1
+		<isNotEmpty prepend="and" property="search">
+			(NAME LIKE '%$search$%' or ALIPAYNAME LIKE '%$search$%')
+		</isNotEmpty>
+		<isNotEmpty prepend="and" property="startTime">
+		<![CDATA[DATE_FORMAT(DATE ,'%Y-%m-%d')>=#startTime#]]>
+		</isNotEmpty>
+		<isNotEmpty prepend="and" property="endTime">
+		<![CDATA[DATE_FORMAT(DATE ,'%Y-%m-%d')<=#endTime#]]>
+		</isNotEmpty>
+		ORDER BY DATE DESC,TIME DESC
+	</select>
+	<select id="redloglistCount" parameterClass="map" resultClass="int">
+		SELECT COUNT(ID) FROM(
+		SELECT ID,
+		NAME,PACKAGEDESC,PACKAGEPRICE,DATE,TIME,PACKAGETYPE,ALIPAYNAME
+		FROM(
+		SELECT r.ID,b.NAME
+		NAME,r.PACKAGEDESC,r.PACKAGEPRICE,r.DATE,r.TIME,r.PACKAGETYPE,u.ALIPAYNAME
+		FROM LE_REDPACKAGELOG r
+		LEFT JOIN LE_OFFLINEADS b ON r.ID=b.ID
+		LEFT JOIN
+		LE_USER u ON r.UID=u.UID
+		WHERE 1=1
+		<isNotEmpty prepend="and" property="search">
+			(b.NAME LIKE '%$search$%'
+			or u.ALIPAYNAME LIKE '%$search$%')
+		</isNotEmpty>
+		<isNotEmpty prepend="and" property="startTime">
+		<![CDATA[DATE_FORMAT(r.DATE ,'%Y-%m-%d')>=#startTime#]]>
+		</isNotEmpty>
+
+		<isNotEmpty prepend="and" property="endTime">
+		<![CDATA[DATE_FORMAT(r.DATE ,'%Y-%m-%d')<=#endTime#]]>
+		</isNotEmpty>
+
+		UNION ALL
+		
+		SELECT r.ID,b.NAME
+		NAME,r.PACKAGEDESC,r.PACKAGEPRICE,r.DATE,r.TIME,r.PACKAGETYPE,u.ALIPAYNAME
+		FROM LE_REDPACKAGELOG r
+		LEFT JOIN LE_BOUTIQUEADS b ON r.ID=b.ID
+		LEFT JOIN LE_USER u ON r.UID=u.UID
+		WHERE 1=1
+		<isNotEmpty prepend="and" property="search">
+			(b.NAME LIKE '%$search$%'
+			or u.ALIPAYNAME LIKE '%$search$%')
+		</isNotEmpty>
+		<isNotEmpty prepend="and" property="startTime">
+		<![CDATA[DATE_FORMAT(r.DATE ,'%Y-%m-%d')>=#startTime#]]>
+		</isNotEmpty>
+
+		<isNotEmpty prepend="and" property="endTime">
+		<![CDATA[DATE_FORMAT(r.DATE ,'%Y-%m-%d')<=#endTime#]]>
+		</isNotEmpty>
+
+		UNION ALL
+
+		SELECT r.ID,b.TITLE
+		NAME,r.PACKAGEDESC,r.PACKAGEPRICE,r.DATE,r.TIME,r.PACKAGETYPE,u.ALIPAYNAME
+		FROM LE_REDPACKAGELOG r
+		LEFT JOIN LE_SHAREARTICLE b ON r.ID=b.ID
+		LEFT JOIN LE_USER u ON r.UID=u.UID
+		WHERE 1=1
+		<isNotEmpty prepend="and" property="search">
+			(b.TITLE LIKE '%$search$%'
+			or u.ALIPAYNAME LIKE '%$search$%')
+		</isNotEmpty>
+		<isNotEmpty prepend="and" property="startTime">
+		<![CDATA[DATE_FORMAT(r.DATE ,'%Y-%m-%d')>=#startTime#]]>
+		</isNotEmpty>
+		<isNotEmpty prepend="and" property="endTime">
+		<![CDATA[DATE_FORMAT(r.DATE ,'%Y-%m-%d')<=#endTime#]]>
+		</isNotEmpty>
+		)kk
+		WHERE 1=1
+		<isNotEmpty prepend="and" property="search">
+			(NAME LIKE '%$search$%'
+			or ALIPAYNAME LIKE '%$search$%')
+		</isNotEmpty>
+		<isNotEmpty prepend="and" property="startTime">
+		<![CDATA[DATE_FORMAT(DATE ,'%Y-%m-%d')>=#startTime#]]>
+		</isNotEmpty>
+
+		<isNotEmpty prepend="and" property="endTime">
+		<![CDATA[DATE_FORMAT(DATE ,'%Y-%m-%d')<=#endTime#]]>
+		</isNotEmpty>
+		)dd
+	</select>
+</sqlMap>

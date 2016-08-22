@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts PUBLIC
+    "-//Apache Software Foundation//DTD Struts Configuration 2.1//EN"
+    "http://struts.apache.org/dtds/struts-2.1.dtd">
+<struts>
+	<constant name="struts.i18n.encoding" value="UTF-8" />
+	<package name="main" extends="strutswithInter" namespace="/">
+	    <!-- 后台账户登录 -->
+		<action name="userM_*" class="UserAction" method="{1}">
+			<result name="userM_list">systemM/list.jsp</result>
+			<result name="userM_info">systemM/info.jsp</result>
+			<result name="userM_add">systemM/add.jsp</result>
+			<result name="input">login.jsp</result>
+			<result name="success">index.jsp</result>
+		</action>
+        <!-- 用户管理 -->
+		<action name="leuserM_*" class="leUserAction" method="{1}">
+			<result name="list">userM/list.jsp</result>
+			<result name="info">userM/info.jsp</result>
+			<result name="income">userM/income.jsp</result>
+			<result name="master">userM/master.jsp</result>
+		</action>
+        <!-- 用户收入管理 -->
+		<action name="incomeM_*" class="incomeAction" method="{1}">
+			<result name="list">userM/income.jsp</result>
+		</action>
+       <!-- 产品管理 -->
+		<action name="proadsM_*" class="ProductAction" method="{1}">
+			<result name="list">proadsM/list.jsp</result>
+			<result name="update">proadsM/update.jsp</result>
+			<result name="add">proadsM/add.jsp</result>
+			<result name="upload">proadsM/upload.jsp</result>
+			<result name="dialog">dialog/prolist.jsp</result>
+			<result name="addMission">missionM/add.jsp</result>
+		</action>
+		<!-- 产品任务管理 -->
+		<action name="misM_*" class="MisAction" method="{1}">
+			<result name="list">missionM/list.jsp</result>
+			<result name="update">missionM/update.jsp</result>
+			<result name="add">missionM/add.jsp</result>
+		</action>
+		<!-- 实体广告管理 -->
+		<action name="entadsM_*" class="EntAction" method="{1}">
+			<result name="entList">entM/list.jsp</result>
+			<result name="entadd">entM/add.jsp</result>
+			<result name="entUpd">entM/update.jsp</result>
+		</action>
+		<!-- 精品广告管理 -->
+		<action name="jpadsM_*" class="JpAction" method="{1}">
+			<result name="list">jpadsM/list.jsp</result>
+			<result name="update">jpadsM/update.jsp</result>
+			<result name="add">jpadsM/add.jsp</result>
+		</action>
+		<!-- 文章分享管理 -->
+		<action name="artM_*" class="ArtAction" method="{1}">
+			<result name="list">articleM/list.jsp</result>
+			<result name="update">articleM/update.jsp</result>
+			<result name="add">articleM/add.jsp</result>
+		</action>
+		<!-- 师徒关系管理 -->
+		<action name="mastM_*" class="MAction" method="{1}">
+			<result name="list">masterM/list.jsp</result>
+		</action>
+		<!-- 统计管理 -->
+		<action name="statiM_*" class="StatisAction" method="{1}">
+			<result name="prolist">statisticsM/prolist.jsp</result>
+			<result name="redlist">statisticsM/redlist.jsp</result>
+			<result name="redloglist">statisticsM/redloglist.jsp</result>
+		</action>
+	</package>
+</struts>

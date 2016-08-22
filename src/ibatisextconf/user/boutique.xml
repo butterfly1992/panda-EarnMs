@@ -1,0 +1,121 @@
+<!DOCTYPE sqlMap      
+    PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"      
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!--精品广告xml -->
+<sqlMap namespace="BoutiqueAds">
+	<typeAlias alias="BO" type="com.earn.ms.po.BoutiqueAds" />
+	<insert id="insert" parameterClass="BO">
+		INSERT INTO LE_BOUTIQUEADS
+		(ID,ADSINDEX,NAME,IMGURL,JUMPURL,PACKAGENAME,
+		STATUES,PRICE,DEVICETYPE,KEYWORD,ICON,YDPROVINCE,LTPROVINCE,DXPROVINCE, 
+	    YDPUTTYPE,LTPUTTYPE,DXPUTTYPE)
+		VALUES
+		(#id#, #adsindex#, #name#,#imgurl#, #jumpurl#, #packagename#,
+		#statues#, #price#, #devicetype#, #keyword#, #icon#,
+		#ydprovince#,#ltprovince#,#dxprovince#, 
+	    #ydputtype#,#ltputtype#,#dxputtype#)
+	</insert>
+	<select id="list" parameterClass="map" resultClass="BO">
+		SELECT ID,IFNULL(ADSINDEX,0)ADSINDEX,NAME,IMGURL,JUMPURL,PACKAGENAME,
+		STATUES,IFNULL(PRICE,0)PRICE,DEVICETYPE,KEYWORD,ICON
+		FROM LE_BOUTIQUEADS
+		where 1=1
+		<isNotEmpty prepend="and" property="search">
+			(NAME like '%$search$%')
+		</isNotEmpty>
+		<isNotEqual compareValue="default" prepend="and" property="statues">
+			STATUES=#statues#
+		</isNotEqual>
+		<isNotEqual compareValue="default" prepend="and" property="type">
+			DEVICETYPE=#type#
+		</isNotEqual>
+		<isNotEmpty prepend="and" property="id">
+			ID=#id#
+		</isNotEmpty>
+		ORDER BY STATUES DESC, ADSINDEX desc
+	</select>
+	<select id="listCount" parameterClass="map" resultClass="int">
+		select count(ID) FROM LE_BOUTIQUEADS
+		where 1=1
+		<isNotEmpty prepend="and" property="search">
+			(NAME like '%$search$%')
+		</isNotEmpty>
+		<isNotEqual compareValue="default" prepend="and" property="statues">
+			STATUES=#statues#
+		</isNotEqual>
+		<isNotEqual compareValue="default" prepend="and" property="type">
+			DEVICETYPE=#type#
+		</isNotEqual>
+		<isNotEmpty prepend="and" property="id">
+			ID=#id#
+		</isNotEmpty>
+		Order by ADSINDEX
+	</select>
+	<!-- 搜索 指定ID的 精品广告 -->
+	<select id="query" parameterClass="map" resultClass="BO">
+		SELECT ID,IFNULL(ADSINDEX,0)ADSINDEX,NAME,IMGURL,JUMPURL,PACKAGENAME,
+		STATUES,PRICE,DEVICETYPE,KEYWORD,ICON,YDPROVINCE,
+		LTPROVINCE,DXPROVINCE,IFNULL(YDPUTTYPE,0)YDPUTTYPE,
+		IFNULL(LTPUTTYPE,0)LTPUTTYPE,IFNULL(DXPUTTYPE,0)DXPUTTYPE
+		FROM LE_BOUTIQUEADS
+		where ID=#id#
+	</select>
+	<!-- 修改广告基本信息 -->
+	<update id="update" parameterClass="BO">
+		update LE_BOUTIQUEADS
+		<dynamic prepend="set">
+			<isNotNull prepend="," property="name">
+				NAME = #name#
+			</isNotNull>
+			<isNotNull prepend="," property="imgurl">
+				IMGURL = #imgurl#
+			</isNotNull>
+			<isNotNull prepend="," property="jumpurl">
+				JUMPURL = #jumpurl#
+			</isNotNull>
+			<isNotNull prepend="," property="packagename">
+				PACKAGENAME = #packagename#
+			</isNotNull>
+			<isNotNull prepend="," property="statues">
+				STATUES = #statues#
+			</isNotNull>
+			<isNotNull prepend="," property="price">
+				PRICE = #price#
+			</isNotNull>
+			<isNotNull prepend="," property="devicetype">
+				DEVICETYPE = #devicetype#
+			</isNotNull>
+			<isNotNull prepend="," property="keyword">
+				KEYWORD = #keyword#
+			</isNotNull>
+			<isNotNull prepend="," property="icon">
+				ICON = #icon#
+			</isNotNull>
+			
+			<isNotNull prepend="," property="ltprovince">
+				LTPROVINCE = #ltprovince#
+			</isNotNull>
+			<isNotNull prepend="," property="ydprovince">
+				YDPROVINCE = #ydprovince#
+			</isNotNull>
+			<isNotNull prepend="," property="dxprovince">
+				DXPROVINCE = #dxprovince#
+			</isNotNull>
+			<isNotNull prepend="," property="ydputtype">
+				YDPUTTYPE = #ydputtype#
+			</isNotNull>
+			<isNotNull prepend="," property="ltputtype">
+				LTPUTTYPE = #ltputtype#
+			</isNotNull>
+			<isNotNull prepend="," property="dxputtype">
+				DXPUTTYPE = #dxputtype#
+			</isNotNull>
+		</dynamic>
+		WHERE ID = #id#
+	</update>
+	<!-- 最大索引 -->
+	<select id="maxIndex" parameterClass="map" resultClass="int">
+		SELECT IFNULL(MAX(ADSINDEX),0) FROM LE_BOUTIQUEADS
+	</select>
+
+</sqlMap>

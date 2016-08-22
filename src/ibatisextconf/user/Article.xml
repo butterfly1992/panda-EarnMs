@@ -1,0 +1,76 @@
+<!DOCTYPE sqlMap      
+    PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"      
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!--文章分享xml -->
+<sqlMap namespace="Article">
+	<typeAlias alias="ART" type="com.earn.ms.po.Article" />
+	<insert id="insert" parameterClass="ART">
+    INSERT INTO LE_SHAREARTICLE 
+	(ID,ADSINDEX,TITLE,ARTICLE,SHAREIMG,SHAREWORLD,STATUES,PRICE)
+	VALUES
+    (#id#, #adsindex#,#title#,#article#, #shareimg#, #shareworld#,#statues#, #price#)
+	</insert>
+	<select id="list" parameterClass="map" resultClass="ART">
+    SELECT ID,ADSINDEX,TITLE,ARTICLE,SHAREIMG,SHAREWORLD,STATUES,PRICE
+	FROM LE_SHAREARTICLE 
+		where 1=1
+		<isNotEmpty prepend="and" property="search">
+			(TITLE like '%$search$%')
+		</isNotEmpty>
+		<isNotEqual compareValue="default" prepend="and" property="statues">
+				STATUES = #statues#
+		</isNotEqual>
+		<isNotEmpty prepend="and" property="id">
+			ID=#id#
+		</isNotEmpty>
+		ORDER BY STATUES DESC
+	</select>
+	<select id="listCount" parameterClass="map" resultClass="int">
+		select count(ID) FROM LE_SHAREARTICLE 
+		where 1=1
+		<isNotEmpty prepend="and" property="search">
+			(TITLE like '%$search$%')
+		</isNotEmpty>
+		<isNotEqual compareValue="default" prepend="and" property="statues">
+				STATUES = #statues#
+			</isNotEqual>
+		<isNotEmpty prepend="and" property="id">
+			ID=#id#
+		</isNotEmpty>
+	</select>
+	<!-- 搜索 指定ID的 文章 -->
+	<select id="query" parameterClass="map" resultClass="ART">
+		SELECT ID,ADSINDEX,TITLE,ARTICLE,SHAREIMG,SHAREWORLD,STATUES,PRICE
+	    FROM LE_SHAREARTICLE 
+		where ID=#id#
+	</select>
+	<!-- 修改文章基本信息 -->
+	<update id="update" parameterClass="ART">
+		update LE_SHAREARTICLE
+		<dynamic prepend="set">
+			<isNotNull prepend="," property="title">
+				TITLE = #title#
+			</isNotNull>
+			<isNotNull prepend="," property="article">
+				ARTICLE = #article#
+			</isNotNull>
+			<isNotNull prepend="," property="shareimg">
+				SHAREIMG = #shareimg#
+			</isNotNull>
+			<isNotNull prepend="," property="shareworld">
+				SHAREWORLD = #shareworld#
+			</isNotNull>
+			<isNotEqual compareValue="default" prepend="," property="statues">
+				STATUES = #statues#
+			</isNotEqual>
+			<isNotNull prepend="," property="price">
+				PRICE = #price#
+			</isNotNull>
+		</dynamic>
+		WHERE ID = #id#
+	</update>
+	<select id="maxIndex" parameterClass="map" resultClass="int">
+		SELECT IFNULL(MAX(ADSINDEX),0) FROM LE_SHAREARTICLE
+	</select>
+
+</sqlMap>

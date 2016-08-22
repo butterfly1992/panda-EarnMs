@@ -1,0 +1,100 @@
+<!DOCTYPE sqlMap      
+    PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"      
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!--用户xml -->
+<sqlMap namespace="LeUser">
+	<typeAlias alias="LeU" type="com.earn.ms.po.LeUser" />
+	<typeAlias alias="Inc" type="com.earn.ms.po.Income" />
+	<select id="list" parameterClass="map" resultClass="LeU">
+		SELECT UID,PHONE,PASSWD,ALIPAY,ALIPAYNAME,
+		SINGDATE,PUID,WECHATID,GROUPUID
+		FROM LE_USER
+		where 1=1
+		<isNotEmpty prepend="and" property="search">
+			(ALIPAYNAME like '%$search$%' or PHONE like '%$search$%')
+		</isNotEmpty>
+		<isNotEmpty prepend="and" property="startTime">
+			<![CDATA[DATE_FORMAT(SINGDATE,'%Y-%m-%d')>=#startTime#]]>
+		</isNotEmpty>
+		<isNotEmpty prepend="and" property="endTime">
+			<![CDATA[DATE_FORMAT(SINGDATE,'%Y-%m-%d')<=#endTime#]]>
+		</isNotEmpty>
+		<isNotEmpty prepend="and" property="id">
+			UID=#id#
+		</isNotEmpty>
+		order by SINGDATE desc
+	</select>
+	<select id="listCount" parameterClass="map" resultClass="int">
+		select count(UID) FROM LE_USER
+		where 1=1
+		<isNotEmpty prepend="and" property="search">
+			(ALIPAYNAME like '%$search$%' or PHONE like '%$search$%')
+		</isNotEmpty>
+		<isNotEmpty prepend="and" property="startTime">
+			<![CDATA[DATE_FORMAT(SINGDATE,'%Y-%m-%d')>=#startTime#]]>
+		</isNotEmpty>
+		<isNotEmpty prepend="and" property="endTime">
+			<![CDATA[DATE_FORMAT(SINGDATE,'%Y-%m-%d')<=#endTime#]]>
+		</isNotEmpty>
+		<isNotEmpty prepend="and" property="id">
+			UID=#id#
+		</isNotEmpty>
+	</select>
+	<!-- 账户财务信息 -->
+	<select id="userInfo" parameterClass="map" resultClass="LeU">
+		SELECT
+		UID,PHONE,PASSWD,ALIPAY,ALIPAYNAME,
+		SINGDATE,PUID,WECHATID,GROUPUID
+		FROM LE_USER
+		where UID=#uid#
+	</select>
+	<!-- 收入总结 -->
+	<select id="userIncome" parameterClass="map" resultClass="Inc">
+		SELECT UID, LASTINCOME, TOTALINCOME, TOTALPAY, DAYICM,
+		MONTHICM, YEARICM, INVITEINCME, REDPACKAGE, MISINCOM
+		FROM LE_USERINCOME
+		where UID=#uid#
+	</select>
+	<!-- 收入明细 -->
+	<select id="incInfo" parameterClass="map" resultClass="Inc">
+		SELECT    UID, DEDATE, DETIME, DEDESC, DEINCOME
+		FROM LE_MIS_DRI_EXP_COMP
+		where UID=#uid#
+		order by DEDATE desc
+	</select>
+	
+	<select id="incInfoCount" parameterClass="map" resultClass="int">
+		SELECT count(id) FROM LE_MIS_DRI_EXP_COMP
+		where UID=#uid#
+	</select>
+ 
+	<update id="update" parameterClass="LeU">
+		update LE_USER
+		<dynamic prepend="set">
+		    <isNotNull prepend="," property="phone">
+				PHONE = #phone#
+			</isNotNull>
+			<isNotNull prepend="," property="passwd">
+				PASSWD = #passwd#
+			</isNotNull>
+		    <isNotNull prepend="," property="alipayname">
+				alipayname = #alipayname#
+			</isNotNull>
+			<isNotNull prepend="," property="alipay">
+				alipay = #alipay#
+			</isNotNull>
+			<isNotNull prepend="," property="puid">
+				PUID = #puid#
+			</isNotNull>
+			<isNotNull prepend="," property="wechatid">
+				WECHATID = #wechatid#
+			</isNotNull>
+			<isNotNull prepend="," property="groupuid">
+				GROUPUID = #groupuid#
+			</isNotNull>
+		</dynamic>
+		where UID=#uid#
+	</update>
+
+
+</sqlMap>

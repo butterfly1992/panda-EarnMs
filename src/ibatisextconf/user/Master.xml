@@ -1,0 +1,35 @@
+<!DOCTYPE sqlMap      
+    PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"      
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!--师徒关系xml -->
+<sqlMap namespace="Master">
+	<typeAlias alias="M" type="com.earn.ms.po.Master" />
+   
+	<select id="list" parameterClass="map" resultClass="M">
+		SELECT u.ALIPAYNAME name,uu.ALIPAYNAME username,SUM(ch.INCOME) income
+		FROM LE_CHILDINCOM ch
+		LEFT JOIN LE_USER u ON ch.PUID=u.UID
+		LEFT JOIN LE_USER uu ON ch.UID=uu.UID
+		where 1=1
+		<isNotEmpty prepend="and" property="search">
+			(u.ALIPAYNAME like
+			'%$search$%' or uu.ALIPAYNAME like '%$search$%')
+		</isNotEmpty>
+		GROUP BY u.ALIPAYNAME,uu.ALIPAYNAME
+		ORDER BY u.ALIPAYNAME,income DESC 
+	</select>
+	<select id="listCount" parameterClass="map" resultClass="int">
+		select count(name) from(
+		SELECT u.ALIPAYNAME name,uu.ALIPAYNAME username
+		FROM LE_CHILDINCOM ch
+		LEFT JOIN LE_USER u ON ch.PUID=u.UID
+		LEFT JOIN LE_USER uu ON ch.UID=uu.UID
+		where 1=1
+		<isNotEmpty prepend="and" property="search">
+			(u.ALIPAYNAME like
+			'%$search$%' or uu.ALIPAYNAME like '%$search$%')
+		</isNotEmpty>
+		GROUP BY u.ALIPAYNAME,uu.ALIPAYNAME
+		) hh
+	</select>
+</sqlMap>

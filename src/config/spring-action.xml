@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd "
+	default-autowire="byName">
+	<bean id="loginInterceptorAction" class="com.earn.ms.interceptor.LoginInterceptor"></bean>
+	<bean id="UserAction" class="com.earn.ms.action.UserA" scope="prototype"></bean>
+	<bean id="leUserAction" class="com.earn.ms.action.LeUserA" scope="prototype"></bean>
+	<bean id="incomeAction" class="com.earn.ms.action.IncomeA" scope="prototype"></bean>
+	<bean id="ProductAction" class="com.earn.ms.action.ProductA" scope="prototype"></bean>
+	<bean id="EntAction" class="com.earn.ms.action.EntityadsA" scope="prototype"></bean>
+	<bean id="MisAction" class="com.earn.ms.action.MisA" scope="prototype"></bean>
+	<bean id="JpAction" class="com.earn.ms.action.BoutiA" scope="prototype"></bean>
+	<bean id="ArtAction" class="com.earn.ms.action.ArticleA" scope="prototype"></bean>
+	<bean id="MAction" class="com.earn.ms.action.MasterA" scope="prototype"></bean>
+	<bean id="StatisAction" class="com.earn.ms.action.StatisticsA" scope="prototype"></bean>
+</beans>

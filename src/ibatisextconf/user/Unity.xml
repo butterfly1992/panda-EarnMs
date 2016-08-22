@@ -1,0 +1,11 @@
+<!DOCTYPE sqlMap      
+    PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"      
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="Unity">
+	<!-- 修改临时表信息 -->
+	<update id="update" parameterClass="map">
+		UPDATE LE_UNITY 
+		SET CREATETIMESTP = #createtimestp#
+	   where  KEYNAME = #keyname# 
+	</update>
+</sqlMap>

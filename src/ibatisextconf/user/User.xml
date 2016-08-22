@@ -1,0 +1,75 @@
+<!DOCTYPE sqlMap      
+    PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"      
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!--登录用户处理xml -->
+<sqlMap namespace="User">
+	<typeAlias alias="User" type="com.earn.ms.po.User" />
+	<select id="validate" parameterClass="map" resultClass="User">
+	SELECT ID, USERNAME, PASSWORD, NAME, ROLE, LASTTIME, DEPARTMENT,
+	SIGN FROM YQ_USER
+	where username=#username#
+	and password=#password#
+	</select>
+	<select id="list" parameterClass="map" resultClass="User">
+		SELECT ID, USERNAME, PASSWORD, NAME, ROLE,DEPARTMENT, LASTTIME, d.DNAME DEPT,
+	    SIGN FROM YQ_USER u LEFT JOIN YQ_DEPARTMENT d ON u.DEPARTMENT=d.DID
+		WHERE 1=1
+		<isNotEmpty prepend="and" property="search">
+			NAME like '%$search$%'
+		</isNotEmpty>
+		<isNotEmpty prepend="and" property="id">
+			ID=#id#
+		</isNotEmpty>
+	</select>
+
+	<select id="listCount" parameterClass="map" resultClass="int">
+		select count(id) from YQ_USER 
+		WHERE 1=1
+		<isNotEmpty prepend="and" property="search">
+			NAME like '%$search$%'
+		</isNotEmpty>
+		<isNotEmpty prepend="and" property="id">
+			ID=#id#
+		</isNotEmpty>
+	</select>
+	
+	<update id="update" parameterClass="User">
+		update YQ_USER
+		<dynamic prepend="set">
+			<isNotNull prepend="," property="name">
+				NAME = #name#
+			</isNotNull>
+			<isNotNull prepend="," property="username">
+				USERNAME = #username#
+			</isNotNull>
+			<isNotNull prepend="," property="department">
+				DEPARTMENT = #department#
+			</isNotNull>
+			<isNotNull prepend="," property="password">
+				PASSWORD = #password#
+			</isNotNull>
+			<isNotNull prepend="," property="role">
+				ROLE = #role#
+			</isNotNull>
+			<isNotNull prepend="," property="lasttime">
+				LASTTIME = #lasttime#
+			</isNotNull>
+		</dynamic>
+		where ID=#id#
+	</update>
+	<insert id="insert" parameterClass="User">
+		INSERT INTO YQ_USER
+		(username,PASSWORD,NAME,role,lasttime,sign,department) VALUES
+		(#username#,#password#,#name#,#role#,null,#sign#,#department#);
+	</insert>
+	<delete id="delete" parameterClass="map">
+		delete from YQ_USER
+		where id=#id#
+	</delete>
+	
+	<!-- 部门列表 -->
+	<select id="deptlist" resultClass="User">
+		SELECT DID id,DNAME dept FROM YQ_DEPARTMENT 
+	</select>
+
+</sqlMap>

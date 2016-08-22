@@ -1,0 +1,9 @@
+/com/
+/config/
+/ibatis/
+/ibatisextconf/
+/log4j.properties
+/resource_en_US.properties
+/resource_zh_CN.properties
+/struts/
+/struts.xml

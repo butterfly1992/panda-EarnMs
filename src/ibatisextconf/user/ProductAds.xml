@@ -1,0 +1,178 @@
+<!DOCTYPE sqlMap      
+    PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"      
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!--产品xml -->
+<sqlMap namespace="ProductAds">
+	<typeAlias alias="PAD" type="com.earn.ms.po.ProductAds" />
+	<insert id="insert" parameterClass="PAD">
+		INSERT INTO LE_PRODUCT
+		(ID,PRONAME,PRODESC,PROPRICE,PROTYPE,PROICON,PROSIZE,PROKEYWORLD,MISSIONDESC,
+		JUMPURL,SCREENSHOT,PRONOTICE,PROSTATUES,PROINDEX,PROPRI,PUPLIMIT,
+		OPENAPPINTER,PACKAGENAME,IOSRANK,YDPROVINCE,LTPROVINCE,DXPROVINCE, 
+	    YDPUTTYPE,LTPUTTYPE,DXPUTTYPE)
+		VALUES
+		(#id#, #proname#, #prodesc#,#proprice#, #protype#, #proicon#, #prosize#,
+		#prokeyworld#, #missiondesc#, #jumpurl#, #screenshot#, #pronotice#, #prostatues#,
+		#proindex#, #propri#, #puplimit#, #openappinter#, #packagename#,
+		#iosrank#,#ydprovince#,#ltprovince#,#dxprovince#, 
+	    #ydputtype#,#ltputtype#,#dxputtype#)
+
+	</insert>
+	<select id="prolist" parameterClass="map" resultClass="PAD">
+		SELECT ID, PRONAME, PROPRICE, PROTYPE,IFNULL(PROSIZE,0)PROSIZE,PROSTATUES,IFNULL(PROINDEX,0) PROINDEX,PACKAGENAME,
+		PROPRI, IFNULL(PUPLIMIT,0)PUPLIMIT
+		FROM LE_PRODUCT
+		where 1=1
+		<isNotEmpty prepend="and" property="search">
+			(PRONAME like '%$search$%')
+		</isNotEmpty>
+		<isNotEqual compareValue="default" prepend="and" property="status">
+			PROSTATUES = #status#
+		</isNotEqual>
+		<isNotEqual compareValue="default" prepend="and" property="type">
+			PROTYPE = #type#
+		</isNotEqual>
+		<isNotEmpty prepend="and" property="id">
+			ID=#id#
+		</isNotEmpty>
+		ORDER BY PROSTATUES DESC, PROPRI
+	</select>
+	<select id="prolistCount" parameterClass="map" resultClass="int">
+		select count(ID) FROM LE_PRODUCT
+		where 1=1
+		<isNotEmpty prepend="and" property="search">
+			(PRONAME like
+			'%$search$%')
+		</isNotEmpty>
+		<isNotEqual compareValue="default" prepend="and" property="status">
+			PROSTATUES = #status#
+		</isNotEqual>
+		<isNotEqual compareValue="default" prepend="and" property="type">
+			PROTYPE = #type#
+		</isNotEqual>
+		<isNotEmpty prepend="and" property="id">
+			ID=#id#
+		</isNotEmpty>
+	</select>
+	<!-- 搜索 指定ID的 产品 -->
+	<select id="proquery" parameterClass="map" resultClass="PAD">
+		SELECT ID, PRONAME, PRODESC, PROPRICE, PROTYPE, PROICON, IFNULL(PROSIZE,0)PROSIZE,
+		PROKEYWORLD, PUPLIMIT,OPENAPPINTER, MISSIONDESC, JUMPURL, SCREENSHOT,
+		PRONOTICE, PROSTATUES, IFNULL(PROINDEX,0)PROINDEX, IFNULL(PROPRI,0)PROPRI,PACKAGENAME,IFNULL(IOSRANK,0)IOSRANK,
+		YDPROVINCE,LTPROVINCE,DXPROVINCE,IFNULL(YDPUTTYPE,0)YDPUTTYPE,IFNULL(LTPUTTYPE,0)LTPUTTYPE,IFNULL(DXPUTTYPE,0)DXPUTTYPE
+		FROM LE_PRODUCT
+		where ID=#id#
+	</select>
+	<!-- 修改优先级 -->
+	<update id="priUpdate" parameterClass="map">
+		update LE_PRODUCT set
+		<isEqual compareValue="1" property="type">
+			PROPRI=PROPRI+1
+		</isEqual>
+		<isEqual compareValue="0" property="type">
+			PROPRI=PROPRI-1
+		</isEqual>
+		where 1=1
+		<isEqual compareValue="1" property="type">
+			<isNotEmpty prepend="and" property="start">
+		   <![CDATA[ PROPRI>=#start#]]>
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="end">
+		   <![CDATA[ PROPRI<#end#]]>
+			</isNotEmpty>
+		</isEqual>
+		<isEqual compareValue="0" property="type">
+			<isNotEmpty prepend="and" property="start">
+		   <![CDATA[ PROPRI>#start#]]>
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="end">
+		   <![CDATA[ PROPRI<=#end#]]>
+			</isNotEmpty>
+		</isEqual>
+	</update>
+	<!-- 修改基本信息 -->
+	<update id="proupdate" parameterClass="PAD">
+		update LE_PRODUCT
+		<dynamic prepend="set">
+			<isNotNull prepend="," property="proname">
+				PRONAME = #proname#
+			</isNotNull>
+			<isNotNull prepend="," property="prodesc">
+				PRODESC = #prodesc#
+			</isNotNull>
+			<isNotNull prepend="," property="proicon">
+				PROICON = #proicon#
+			</isNotNull>
+			<isNotNull prepend="," property="screenshot">
+				SCREENSHOT = #screenshot#
+			</isNotNull>
+			
+			<isNotNull prepend="," property="proprice">
+				PROPRICE = #proprice#
+			</isNotNull>
+			<isNotNull prepend="," property="protype">
+				PROTYPE = #protype#
+			</isNotNull>
+			<isNotNull prepend="," property="prosize">
+				PROSIZE = #prosize#
+			</isNotNull>
+			<isNotNull prepend="," property="prokeyworld">
+				PROKEYWORLD = #prokeyworld#
+			</isNotNull>
+			<isNotNull prepend="," property="missiondesc">
+				MISSIONDESC = #missiondesc#
+			</isNotNull>
+			<isNotNull prepend="," property="jumpurl">
+				JUMPURL = #jumpurl#
+			</isNotNull>
+			<isNotNull prepend="," property="pronotice">
+				PRONOTICE = #pronotice#
+			</isNotNull>
+			<isNotNull prepend="," property="prostatues">
+				PROSTATUES = #prostatues#
+			</isNotNull>
+			<isNotEqual compareValue="0" prepend="," property="propri">
+				PROPRI = #propri#
+			</isNotEqual>
+			<isNotEqual compareValue="0" prepend="," property="puplimit">
+				PUPLIMIT = #puplimit#
+			</isNotEqual>
+			<isNotNull prepend="," property="openappinter">
+				OPENAPPINTER = #openappinter#
+			</isNotNull>
+			<isNotNull prepend="," property="packagename">
+				PACKAGENAME = #packagename#
+			</isNotNull>
+			<isNotEqual compareValue="0" prepend="," property="packagename">
+				IOSRANK = #iosrank#
+			</isNotEqual>
+			
+			<isNotNull prepend="," property="ltprovince">
+				LTPROVINCE = #ltprovince#
+			</isNotNull>
+			<isNotNull prepend="," property="ydprovince">
+				YDPROVINCE = #ydprovince#
+			</isNotNull>
+			<isNotNull prepend="," property="dxprovince">
+				DXPROVINCE = #dxprovince#
+			</isNotNull>
+			<isNotNull prepend="," property="ydputtype">
+				YDPUTTYPE = #ydputtype#
+			</isNotNull>
+			<isNotNull prepend="," property="ltputtype">
+				LTPUTTYPE = #ltputtype#
+			</isNotNull>
+			<isNotNull prepend="," property="dxputtype">
+				DXPUTTYPE = #dxputtype#
+			</isNotNull>
+		</dynamic>
+		WHERE ID = #id#
+	</update>
+	<select id="maxIndex" parameterClass="map" resultClass="int">
+		SELECT
+		IFNULL(MAX(PROINDEX),0) FROM LE_PRODUCT
+	</select>
+	<select id="Index" parameterClass="map" resultClass="int">
+		SELECT IFNULL(MAX(PROPRI),0) FROM LE_PRODUCT WHERE PROSTATUES='on'
+	</select>
+</sqlMap>
